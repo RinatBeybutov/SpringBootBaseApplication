@@ -15,7 +15,7 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
-	@Bean
+	/*@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
 
@@ -24,9 +24,9 @@ public class DemoApplication {
 			String[] beanNames = ctx.getBeanDefinitionNames();
 			Arrays.sort(beanNames);
 			for (String beanName : beanNames) {
-				//System.out.println(beanName);
+				System.out.println(beanName);
 			}
 
 		};
-	}
+	}*/
 }
