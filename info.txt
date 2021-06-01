@@ -1,0 +1,32 @@
+
+User:
+1. id
+2. Name
+3. Surname
+4. роль
+5. проект
+
+create type role_type as enum('MANAGER', 'DEVELOPER');
+
+create table users (
+    id serial primary key,
+    name character varying(40),
+    surname character varying(40),
+    role role_type,
+    id_project integer,
+    Foreign key (id_project) references projects(id)
+);
+
+create table projects (
+    id serial primary key,
+    name character varying(40),
+    id_manager integer,
+    Foreign key (id_manager) references users(id)
+);
+
+
+Project
+1. id
+2. название
+3. лист девелоперов?
+4. id менеджера
