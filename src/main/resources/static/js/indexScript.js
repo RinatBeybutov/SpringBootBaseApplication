@@ -4,7 +4,7 @@ function loadUsers() {
             if (this.readyState == 4 && this.status == 200) {
                 var users = JSON.parse(this.responseText);
                 var html = '<tr>\n' +
-                    '        <th> id</th>\n' +
+                    '        <th> №</th>\n' +
                     '        <th> name</th>\n' +
                     '        <th> surname</th>\n' +
                     '        <th> role</th>\n' +
@@ -12,7 +12,7 @@ function loadUsers() {
                     '    </tr>';
                 for (var i = 0; i < users.length; i++) {
                     var user = users[i];
-                    html = html + '<tr><td> <a href="User.html" onClick="loadSingleUser('+user.id+')">' + user.id + '</a> </td>\n' +
+                    html = html + '<tr><td> <a href="User.html" onClick="loadSingleUser('+user.id+')">' + (i+1) + '</a> </td>\n' +
                         '        <td>  ' + user.name + ' </td>\n' +
                         '        <td>' + user.surname + '</td>\n' +
                         '        <td>' + user.role + '</td>\n' +
@@ -41,10 +41,36 @@ function createUser() {
         loadUsers();
 }
 
-function loadSingleUser(id) {
+function createProject() {
+ document.querySelector('#formProject').classList.add('close')
+ var projectName = document.getElementById("projectName").value;
 
+ var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+        xmlhttp.open("POST", "http://localhost:8080/projects");
+        xmlhttp.setRequestHeader("Content-Type", "application/json");
+        xmlhttp.send(JSON.stringify({name: projectName}));
+}
+
+function loadSingleUser(id) {
 console.log(id);
 localStorage.setItem('id', id);
+}
 
+function loadProjects()
+{
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var projects = JSON.parse(this.responseText);
+                var html = "";
+                for (var i = 0; i < projects.length; i++) {
+                    var project = projects[i];
+                    html = html + "<option>" + project.name + "</option>\n";
+                }
+                document.getElementById("selectProject").innerHTML = html;
+            }
+        };
+        xhttp.open("GET", "http://localhost:8080/projects", true);
+        xhttp.send();
 
 }

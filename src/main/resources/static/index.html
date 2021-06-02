@@ -19,6 +19,21 @@
   display: none;
 }
 
+ #formProject {
+  display: none;
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+  animation-name: fadeIn;
+}
+
+#formProject.open {
+  display: block;
+}
+
+#formProject.close {
+  display: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -41,8 +56,12 @@
 
 </script>
 
-<button>
+<button id="addEmployee">
     Добавить сотрудника!
+</button>
+
+<button id="addProject">
+    Добавить проект!
 </button>
 
 <div id="formRegistration">
@@ -60,19 +79,32 @@
         </select> <br>
 
         <select id="selectProject">
-            <option>AVAYA</option>
+
         </select> <br>
         <button id="hideRegistration" type="submit" onclick="createUser()" name="submitButton" >Сохранить </button>
     </form>
 </div>
 
+<div id="formProject">
+    <form>
+        <br><label>Name <input id="projectName" type="text" placeholder="MrTwentyTwo"> </label>
+        <button id="hideProject" type="submit" onclick="createProject()" name="submitButton" >Сохранить </button>
+    </form>
+</div>
 <script>
 
-const button = document.querySelector('button');
-const form = document.querySelector('#formRegistration');
+const buttonAddEmployee = document.querySelector('#addEmployee');
+const buttonAddProject = document.querySelector('#addProject');
+const formEmployee = document.querySelector('#formRegistration');
+const formProject = document.querySelector('#formProject');
 
-button.addEventListener('click', () => {
-  form.classList.add('open');
+buttonAddEmployee.addEventListener('click', () => {
+  formEmployee.classList.add('open');
+  loadProjects();
+});
+
+buttonAddProject.addEventListener('click', () => {
+    formProject.classList.add('open');
 });
 
 </script>

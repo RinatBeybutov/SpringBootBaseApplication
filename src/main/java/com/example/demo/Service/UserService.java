@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
 import au.com.bytecode.opencsv.bean.CsvToBean;
 import com.example.demo.DTO.UserDto;
+import com.example.demo.DTO.UserEditRequest;
 import com.example.demo.DTO.UserRequest;
 import com.example.demo.Entity.Project;
 import com.example.demo.Entity.RoleType;
@@ -15,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,5 +96,19 @@ public class UserService {
         else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public void editUser(UserEditRequest userEditRequest) {
+        User user = userRepository.findById(userEditRequest.getId()).get();
+        user.setRole(userEditRequest.getRole().equals("DEVELOPER") ? RoleType.DEVELOPER : RoleType.MANAGER);
+        Project project = projectRepository.findByName(userEditRequest.getProject());
+        user.setProject(project);
+
+        userRepository.save(user);
+
+    }
+
+    public void deleteUser(int id) {
+        userRepository.deleteById(id);
     }
 }
