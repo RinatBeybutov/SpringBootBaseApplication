@@ -1,10 +1,29 @@
 package com.example.demo.DTO;
 
+import java.util.List;
+
 public class UserRequest {
     private String name;
     private String surname;
     private String role;
-    private String project;
+    private String password;
+    private List<String> project;
+
+    public List<String> getProject() {
+        return project;
+    }
+
+    public void setProject(List<String> project) {
+        this.project = project;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getName() {
         return name;
@@ -30,11 +49,4 @@ public class UserRequest {
         this.role = role;
     }
 
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
 }

@@ -1,21 +1,23 @@
 package com.example.demo.Entity;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User {
-
 
     public User ()
     {
 
     }
 
-    public User(String name, String surname, RoleType role, Project project) {
+    public User(String name, String surname, String password, RoleType role) {
         this.name = name;
         this.surname = surname;
         this.role = role;
-        this.project = project;
+        this.password = password;
     }
 
     @Id
@@ -23,13 +25,32 @@ public class User {
     private int id;
     private String name;
     private String surname;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_project")
-    private Project project;
+    @ManyToMany //(cascade = CascadeType.DETACH)
+    @JoinTable(name = "user2project",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "project_id")})
+    private List<Project> project = new ArrayList<>();
+
+    public List<Project> getProject() {
+        return project;
+    }
+
+    public void setProject(List<Project> project) {
+        this.project = project;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public int getId() {
         return id;
@@ -63,11 +84,5 @@ public class User {
         this.role = role;
     }
 
-    public Project getProject() {
-        return project;
-    }
 
-    public void setProject(Project project) {
-        this.project = project;
-    }
 }

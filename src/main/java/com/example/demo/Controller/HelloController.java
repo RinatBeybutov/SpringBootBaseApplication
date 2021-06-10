@@ -1,14 +1,12 @@
 package com.example.demo.Controller;
 
-import com.example.demo.DTO.ProjectRequest;
-import com.example.demo.DTO.UserEditRequest;
-import com.example.demo.DTO.UserDto;
-import com.example.demo.DTO.UserRequest;
+import com.example.demo.DTO.*;
 import com.example.demo.Entity.*;
 import com.example.demo.Service.ProjectService;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -59,7 +57,8 @@ public class HelloController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("id") int id) {
+    //@PreAuthorize("!hasAuthority('DEVELOPER')")
+    public ResponseEntity<SingleUserDto> getUserById(@PathVariable("id") int id, @RequestParam("name") String nameAuth) {
         return userService.getUserById(id);
     }
 
@@ -77,9 +76,9 @@ public class HelloController {
     @RequestMapping("/users/{name}")
     public String getUserByName(@PathVariable("name") String name) {
         StringBuilder builder = new StringBuilder();
-        for (User user : userService.getUserByName(name)) {
-            builder.append(user.getName() + "  " + user.getSurname() + "\n\n");
-        }
+        User user = userService.getUserByName(name);
+        builder.append(user.getName() + "  " + user.getSurname() + "\n\n");
+
         return builder.toString();
     }
 

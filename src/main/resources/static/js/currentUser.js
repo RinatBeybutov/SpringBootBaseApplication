@@ -1,8 +1,7 @@
-
 var userName = '';
 var userSurname='';
 var userRole='';
-var userProject='';
+var userProjects;
 
 function loadUser() {
     var userId = localStorage.getItem('id');
@@ -20,17 +19,18 @@ function loadUser() {
                 userName = user.name;
                 userSurname=user.surname;
                 userRole=user.role;
-                userProject=user.project;
-                loadForm(userName, userSurname, userRole, userProject );
+                userProjects=user.projects;
+                loadForm(userName, userSurname, userRole, userProjects);
+        } else if(this.readyState == 4 && this.status == 403) {
+            window.location.href = "mainPage.html";
         }
     };
-    xhttp.open("GET", "http://localhost:8080/users/"+userId, true);
+    var authName = localStorage.getItem('name');
+    xhttp.open("GET", "http://localhost:8080/users/"+userId +"?name="+authName, true);
     xhttp.send();
-
-
 }
 
-function loadForm(name, surname, role, project) {
+function loadForm(name, surname, role, projectsArray) {
 
     var xhttp = new XMLHttpRequest();
     var html = '<label>' + name + '</label><br>\n' +
@@ -38,22 +38,28 @@ function loadForm(name, surname, role, project) {
                '<select id="selectRole">\n' +
                '<option>' + role + '</option>\n' +  //<select id="selectRole">
                '<option>' + (role == "MANAGER" ? "DEVELOPER" : "MANAGER") + '</option>\n' +
-               '</select><br>\n' +
-               '<select id="selectProject">\n' +
-               '<option>' + project + '</option>\n';
+               '</select>\n';
+               var i=0;
+    for(i; i < projectsArray.length; i++) {
+        html = html + '<br><input type=checkbox name="formProjects" value='+ projectsArray[i] +' checked/>'+ projectsArray[i] +'\n'
+    }
+               //'<select id="selectProject">\n' +
+               //'<option>' + project + '</option>\n';
 
     xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var projects = JSON.parse(this.responseText);
-        for (var i = 0; i < projects.length; i++) {
-            var project = projects[i];
-            if(project.name === userProject)  {
+        for (var j = 0; j < projects.length; j++) {
+            var project = projects[j];
+            if(projectsArray.indexOf(project.name) != -1)  {
                 continue;
             }
-            html = html + '<option>' + project.name + '</option>\n';
+            //<input type="checkbox" name="formWheelchair" value="Yes" />
+            html = html + '<br><input type=checkbox name="formProjects" value="'+ project.name +'"/>'+ project.name +'\n'      //'<option>' + project.name + '</option>\n';
+            i++;
         }
-        html = html + '</select><br>\n' +
-        "<button id=hideRegistration type=submit onclick=updateUser() name=submitButton >Save </button>";
+        html = html +
+        "<br><button id=hideRegistration type=submit onclick=updateUser() name=submitButton >Save </button>";
         document.getElementById("editUser").innerHTML = html;
         }
     };
@@ -66,12 +72,21 @@ function updateUser()
 {
  var userId = localStorage.getItem('id');
  var userRole = document.getElementById("selectRole").value;
- var userProject = document.getElementById("selectProject").value;
+ var userProjects = document.getElementsByName("formProjects");
+ var responseProjectsArr =  new Array();
+
+ for(var i = 0; i< userProjects.length; i++)
+ {
+    if(userProjects[i].checked) {
+       responseProjectsArr.push(userProjects[i].value);
+    }
+
+ }
 
  var xmlhttp = new XMLHttpRequest();
  xmlhttp.open("PUT", "http://localhost:8080/users");
  xmlhttp.setRequestHeader("Content-Type", "application/json");
- xmlhttp.send(JSON.stringify({id:userId, role: userRole, project:userProject}));
+ xmlhttp.send(JSON.stringify({id:userId, role: userRole, projects:responseProjectsArr}));
 }
 
 function deleteUser()

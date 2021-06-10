@@ -1,0 +1,116 @@
+<!Doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello world :)</title>
+    <style>
+        #formRegistration {
+  display: none;
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+  animation-name: fadeIn;
+}
+
+#formRegistration.open {
+  display: block;
+}
+
+#formRegistration.close {
+  display: none;
+}
+
+ #formProject {
+  display: none;
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+  animation-name: fadeIn;
+}
+
+#formProject.open {
+  display: block;
+}
+
+#formProject.close {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+    </style>
+</head>
+<body>
+
+<h2>Developers in Projects</h2>
+
+<table id="usersList">
+</table>
+
+<script src="/js/indexScript.js">
+
+</script>
+
+<button id="addEmployee">
+    Добавить сотрудника!
+</button>
+
+<button id="addProject">
+    Добавить проект!
+</button>
+
+<div id="formRegistration">
+    <form>
+        <br> <legend>Добавление нового сотрудника</legend>
+        <div>
+            <label>Name <input id="userName" type="text" placeholder="Ignat"> </label>
+        </div>
+        <div>
+            <label>Surname <input id="userSurname" type="text" placeholder="Ivanov"></label>
+        </div>
+        <div>
+            <label>Password <input id="userPassword" type="text" placeholder="qwerty"></label>
+        </div>
+        <select id="selectRole">
+            <option>DEVELOPER</option>
+            <option>MANAGER</option>
+        </select> <br>
+
+        <div id="selectProject" >
+
+        </div>
+        <button id="hideRegistration" type="submit" onclick="createUser()" name="submitButton" >Сохранить </button>
+    </form>
+</div>
+
+<div id="formProject">
+    <form>
+        <br><label>Name <input id="projectName" type="text" placeholder="MrTwentyTwo"> </label>
+        <button id="hideProject" type="submit" onclick="createProject()" name="submitButton" >Сохранить </button>
+    </form>
+</div>
+<script>
+
+const buttonAddEmployee = document.querySelector('#addEmployee');
+const buttonAddProject = document.querySelector('#addProject');
+const formEmployee = document.querySelector('#formRegistration');
+const formProject = document.querySelector('#formProject');
+
+buttonAddEmployee.addEventListener('click', () => {
+  formEmployee.classList.add('open');
+  loadProjects();
+});
+
+buttonAddProject.addEventListener('click', () => {
+    formProject.classList.add('open');
+});
+
+</script>
+
+</body>
+</html>

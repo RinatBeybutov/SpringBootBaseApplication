@@ -1,8 +1,6 @@
 package com.example.demo.Service;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
-import au.com.bytecode.opencsv.bean.CsvToBean;
+import com.example.demo.DTO.SingleUserDto;
 import com.example.demo.DTO.UserDto;
 import com.example.demo.DTO.UserEditRequest;
 import com.example.demo.DTO.UserRequest;
@@ -32,6 +30,7 @@ public class UserService {
 
     public ResponseEntity<List<UserDto>> getAllUsers() {
 
+
         List<User> listUser = userRepository.findAllAsk();
 
         List<UserDto> userDtoList = listUser.stream()
@@ -47,23 +46,26 @@ public class UserService {
         userDto.setName(user.getName());
         userDto.setSurname(user.getSurname());
         userDto.setRole(user.getRole().toString());
-        userDto.setProject(user.getProject().getName());
+        //userDto.setProject(user.getProject()!=null ? user.getProject().getName() : "");
 
         return userDto;
     }
 
-
-    public List<User> getUserByName(String name) {
+    public User getUserByName(String name) {
         return userRepository.findAllByName(name);
     }
 
-
     public void addNewUsers(UserRequest userRequest) throws IOException {
 
-        Project project = projectRepository.findByName(userRequest.getProject());
+        List<Project> projects = userRequest.getProject()
+                .stream()
+                .map(project -> projectRepository.findByName(project))
+                .collect(Collectors.toList());
+        //Project project = projectRepository.findByName(userRequest.getProject());
 
-        User user = new User(userRequest.getName(), userRequest.getSurname(),
-                userRequest.getRole().equals("DEVELOPER") ? RoleType.DEVELOPER : RoleType.MANAGER, project);
+        User user = new User(userRequest.getName(), userRequest.getSurname(), userRequest.getPassword(),
+                userRequest.getRole().equals("DEVELOPER") ? RoleType.DEVELOPER : RoleType.MANAGER);
+        user.setProject(projects);
 
         userRepository.save(user);
 
@@ -87,22 +89,48 @@ public class UserService {
     }
 
 
-    public ResponseEntity<UserDto> getUserById(int id) {
+    public ResponseEntity<SingleUserDto> getUserById(int id) {
 
         Optional<User> userOptional = userRepository.findById(id);
         if(userOptional.isPresent()) {
-            return new ResponseEntity<UserDto>(convertFromUserToUserDto(userOptional.get()), HttpStatus.OK);
+            return new ResponseEntity<SingleUserDto>(convertFromUserToSingleUserDto(userOptional.get()), HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    private SingleUserDto convertFromUserToSingleUserDto(User user) {
+        SingleUserDto singleUserDto = new SingleUserDto();
+        singleUserDto.setId(user.getId());
+        singleUserDto.setName(user.getName());
+        singleUserDto.setSurname(user.getSurname());
+        singleUserDto.setRole(user.getRole().toString());
+        List<String> listProjects = user.getProject()
+                .stream()
+                .map(Project::getName)
+                .collect(Collectors.toList());
+        singleUserDto.setProjects(listProjects);
+        return singleUserDto;
+    }
+
     public void editUser(UserEditRequest userEditRequest) {
         User user = userRepository.findById(userEditRequest.getId()).get();
         user.setRole(userEditRequest.getRole().equals("DEVELOPER") ? RoleType.DEVELOPER : RoleType.MANAGER);
-        Project project = projectRepository.findByName(userEditRequest.getProject());
-        user.setProject(project);
+        List<String> oldProjects = user.getProject()
+                .stream()
+                .map(Project::getName)
+                .collect(Collectors.toList());
+
+        for (String str : userEditRequest.getProjects()) {
+            if(!oldProjects.contains(str)) {
+                Project project = projectRepository.findByName(str);
+                user.getProject().add(project);
+
+            }
+        }
+        //Project project = projectRepository.findByName(userEditRequest.getProject());
+        //user.setProject(project);
 
         userRepository.save(user);
 
