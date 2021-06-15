@@ -1,11 +1,11 @@
 package com.example.demo.Config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -25,6 +25,9 @@ public class OAuthConfig extends AuthorizationServerConfigurerAdapter {
     //@Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Bean
     public JwtAccessTokenConverter tokenEnhancer() throws Exception {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
@@ -34,7 +37,7 @@ public class OAuthConfig extends AuthorizationServerConfigurerAdapter {
         KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource("token.jks"),
                         "secret_pass".toCharArray());
         converter.setKeyPair(keyStoreKeyFactory.getKeyPair("adw"));
-        converter.setAccessTokenConverter(converter);
+        //converter.setAccessTokenConverter(converter);
         converter.afterPropertiesSet();
         return converter;
     }
@@ -44,8 +47,10 @@ public class OAuthConfig extends AuthorizationServerConfigurerAdapter {
     }
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager).tokenStore(tokenStore())
-                .accessTokenConverter(tokenEnhancer());
+        endpoints.authenticationManager(authenticationManager)
+                .tokenStore(tokenStore())
+                .accessTokenConverter(tokenEnhancer())
+                .userDetailsService(userDetailsService);
     }
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -58,7 +63,7 @@ public class OAuthConfig extends AuthorizationServerConfigurerAdapter {
                 .secret(clientSecret)
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(20000)
+                .accessTokenValiditySeconds(20)
                 .refreshTokenValiditySeconds(20000);
 
     }

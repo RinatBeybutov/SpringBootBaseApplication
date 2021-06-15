@@ -22,6 +22,8 @@ function loadUsers() {
             }
         };
         xhttp.open("GET", "http://localhost:8080/users", true);
+        var token = "Bearer " + localStorage.getItem('access_token');
+        xhttp.setRequestHeader("Authorization", token);
         xhttp.send();
 }
 
@@ -47,6 +49,8 @@ function createUser() {
  var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
         xmlhttp.open("POST", "http://localhost:8080/users");
         xmlhttp.setRequestHeader("Content-Type", "application/json");
+        var token = "Bearer " + localStorage.getItem('access_token');
+        xmlhttp.setRequestHeader("Authorization", token);
         xmlhttp.send(JSON.stringify({name: userName, surname: userLogin, password: userPassword, role: userRole, project: responseProjectsArr}));
         loadUsers();
 }
@@ -58,6 +62,8 @@ function createProject() {
  var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
         xmlhttp.open("POST", "http://localhost:8080/projects");
         xmlhttp.setRequestHeader("Content-Type", "application/json");
+        var token = "Bearer " + localStorage.getItem('access_token');
+        xmlhttp.setRequestHeader("Authorization", token);
         xmlhttp.send(JSON.stringify({name: projectName}));
 }
 
@@ -80,6 +86,8 @@ function loadProjects()
             }
         };
         xhttp.open("GET", "http://localhost:8080/projects", true);
+        var token = "Bearer " + localStorage.getItem('access_token');
+        xhttp.setRequestHeader("Authorization", token);
         xhttp.send();
 
 }

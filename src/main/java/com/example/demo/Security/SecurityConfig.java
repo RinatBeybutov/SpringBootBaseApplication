@@ -35,8 +35,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
+        /*http.
+                anonymous().disable()
+                .authorizeRequests()
+                .antMatchers("/api/**").authenticated()
+                .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());*/
+
         http.authorizeRequests()
-                .anyRequest()
+                .antMatchers("/users/**")               //.anyRequest()
                 .authenticated()
                 .and()
                 .sessionManagement()
@@ -46,17 +52,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring();
+        web.ignoring()
+                .antMatchers("/")
+                .antMatchers("/**.html")
+                .antMatchers("/js/**");
     }
 
     @Bean
     protected AuthenticationManager getAuthenticationManager() throws Exception {
         return super.authenticationManagerBean();
     }
-
-    /*@Bean
-    public AuthenticationManager authenticationManagerBeans() throws Exception {
-        return super.authenticationManagerBean();
-    }*/
 
 }

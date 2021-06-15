@@ -6,17 +6,15 @@
 </head>
 <body>
 <form>
-    <label>Enter your name as in database</label><br>
+    <label>Enter yours credentials</label><br>
+    <label>name: </label>
     <input type="text" id="userName"><br>
+    <label>password: </label>
+    <input type="text" id="userPassword"><br>
     <button type="submit" onclick="authentication()"><a href="mainPage.html"> Sign In </a></button>
 </form>
 
-<script>
-function authentication() {
- var userName = document.getElementById("userName").value;
- localStorage.setItem('name', userName);
-
-}
+<script src="/js/token.js">
 
 </script>
 

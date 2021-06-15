@@ -72,6 +72,12 @@ public class HelloController {
         projectService.addNewProject(projectRequest);
     }
 
+    /*public ResponseEntity<?> validateToken( // токен)
+    {
+
+        // return ok
+    }*/
+
 
     @RequestMapping("/users/{name}")
     public String getUserByName(@PathVariable("name") String name) {

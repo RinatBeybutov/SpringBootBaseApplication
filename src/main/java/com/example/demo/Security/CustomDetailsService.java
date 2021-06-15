@@ -31,11 +31,6 @@ public class CustomDetailsService implements UserDetailsService {
             }
         }
 
-        System.gc();
-        System.out.println("\nfreMemory = " +
-                Runtime.getRuntime().freeMemory() + "|||" + Runtime.getRuntime().maxMemory() + "|||" +
-                (Runtime.getRuntime().maxMemory() / Runtime.getRuntime().freeMemory()));
-
         if(user == null) {
             throw new UsernameNotFoundException("User not found in database: " + username);
         }

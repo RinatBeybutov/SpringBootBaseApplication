@@ -27,6 +27,8 @@ function loadUser() {
     };
     var authName = localStorage.getItem('name');
     xhttp.open("GET", "http://localhost:8080/users/"+userId +"?name="+authName, true);
+    var token = "Bearer " + localStorage.getItem('access_token');
+    xhttp.setRequestHeader("Authorization", token);
     xhttp.send();
 }
 
@@ -64,6 +66,8 @@ function loadForm(name, surname, role, projectsArray) {
         }
     };
     xhttp.open("GET", "http://localhost:8080/projects", true);
+    var token = "Bearer " + localStorage.getItem('access_token');
+    xhttp.setRequestHeader("Authorization", token);
     xhttp.send();
 
 }
@@ -86,6 +90,8 @@ function updateUser()
  var xmlhttp = new XMLHttpRequest();
  xmlhttp.open("PUT", "http://localhost:8080/users");
  xmlhttp.setRequestHeader("Content-Type", "application/json");
+ var token = "Bearer " + localStorage.getItem('access_token');
+ xhttp.setRequestHeader("Authorization", token);
  xmlhttp.send(JSON.stringify({id:userId, role: userRole, projects:responseProjectsArr}));
 }
 
@@ -94,6 +100,8 @@ function deleteUser()
  var userId = localStorage.getItem('id');
  var xmlhttp = new XMLHttpRequest();
  xmlhttp.open("DELETE", "http://localhost:8080/users/"+userId);
+ var token = "Bearer " + localStorage.getItem('access_token');
+ xhttp.setRequestHeader("Authorization", token);
  xmlhttp.send();
 
 }
