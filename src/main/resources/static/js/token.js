@@ -1,3 +1,8 @@
+
+var refresh_token_value = "";
+
+var timeOutId;
+
 function authentication() {
     var userName = document.getElementById("userName").value;
     var userPassword = document.getElementById("userPassword").value;
@@ -15,9 +20,14 @@ try {
                 var tokensParameters = JSON.parse(this.responseText);
                 var access_token = tokensParameters.access_token;
                 var refresh_token = tokensParameters.refresh_token;
+                var length = tokensParameters.expires_in;
+                var dateToken = new Date();
                 localStorage.setItem('access_token', access_token);
+                localStorage.setItem('refresh_token', refresh_token);
+                localStorage.setItem('expires_in', length);
+                localStorage.setItem('dateToken', dateToken);
 
-                window.setTimeout(changeToken, 4000, refresh_token);
+                //timeOutId = setInterval(changeToken, 4000);
             }
         };
 
@@ -37,12 +47,12 @@ console.log("");
     // берем аксес токен и в локал сторадже
 }
 
-function changeToken(token) {
+function changeToken() {
     var http = new XMLHttpRequest();
     var refresh_token = "refresh_token";
 
     var body = 'grant_type=' + encodeURIComponent(refresh_token) +
-    '&refresh_token=' + encodeURIComponent(token);
+    '&refresh_token=' + encodeURIComponent(refresh_token_value);
 
     http.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
@@ -51,7 +61,7 @@ function changeToken(token) {
                 var old_token = localStorage.getItem('access_token');
                 localStorage.setItem('old_token', old_token);
                 localStorage.setItem('access_token', access_token);
-                //alert("string");
+                alert("string");
             }
         };
 
