@@ -1,7 +1,6 @@
 package com.example.demo.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -48,7 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/**")               //.anyRequest()
                 .authenticated()
                 .and()
-                .addFilterBefore(new AesFilter(), WebAsyncManagerIntegrationFilter.class)
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.NEVER)
         ;
@@ -58,25 +55,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
+                .antMatchers("/login")
+                .antMatchers("/logout")
                 .antMatchers("/")
                 .antMatchers("/**.html")
-                .antMatchers("/js/**");
+                .antMatchers("/js/**.js")
+                .antMatchers("/favicon.ico")
+                .antMatchers("/error/**");
     }
 
     @Bean
     protected AuthenticationManager getAuthenticationManager() throws Exception {
         return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public FilterRegistrationBean<AesFilter> loggingFilter(){
-        FilterRegistrationBean<AesFilter> registrationBean
-                = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new AesFilter());
-        registrationBean.addUrlPatterns("/**");
-
-        return registrationBean;
     }
 
 }

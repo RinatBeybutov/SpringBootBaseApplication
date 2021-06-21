@@ -128,3 +128,12 @@ function loadProjects()
         xhttp.send();
 
 }
+
+function logOut() {
+
+    var xmlhttp = new XMLHttpRequest();
+    var userName = localStorage.getItem('name');
+    xmlhttp.open("POST", "http://localhost:8080/logout?name=" + userName);
+    xmlhttp.send();
+
+}

@@ -28,7 +28,6 @@ public class Authentification {
         String name = (String) joinPoint.getArgs()[1];
         User user = userRepository.findAllByName(name);
         if(user.getRole() == RoleType.DEVELOPER) {
-            //throw new Exception("ex");
             throw new UnauthorizationException();
         }
     }

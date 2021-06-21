@@ -3,19 +3,48 @@ var userSurname='';
 var userRole='';
 var userProjects;
 
+function changeToken() {
+    var http = new XMLHttpRequest();
+    var refresh_token = "refresh_token";
+    var refresh_token_value = localStorage.getItem('refresh_token');
+
+    var body = 'grant_type=' + encodeURIComponent(refresh_token) +
+    '&refresh_token=' + encodeURIComponent(refresh_token_value);
+
+    http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var tokensParameters = JSON.parse(this.responseText);
+                var access_token = tokensParameters.access_token;
+                var old_token = localStorage.getItem('access_token');
+                localStorage.setItem('old_token', old_token);
+                localStorage.setItem('access_token', access_token);
+            }
+        };
+
+    http.open("POST", "http://localhost:8080/oauth/token", false);
+    http.setRequestHeader("Authorization", "Basic dGVzdDpjbGllbnQtc2VjcmV0");
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    http.send(body);
+}
+
+function checkValidityToken() {
+        var oldLength = localStorage.getItem('expires_in');
+        var oldDate = localStorage.getItem('dateToken');
+        if((new Date() - Date.parse(oldDate)) >= oldLength * 1000) {
+            changeToken();
+        }
+}
+
 function loadUser() {
     var userId = localStorage.getItem('id');
 
     var xhttp = new XMLHttpRequest();
 
+    checkValidityToken();
+
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
                 var user = JSON.parse(this.responseText);
-                //html = user.name + "<br>"
-                //+ user.surname + "<br>"
-                //+ user.role + "<br>"
-                //+ user.project;
-                //document.getElementById("userInfo").innerHTML = html;
                 userName = user.name;
                 userSurname=user.surname;
                 userRole=user.role;
@@ -45,8 +74,8 @@ function loadForm(name, surname, role, projectsArray) {
     for(i; i < projectsArray.length; i++) {
         html = html + '<br><input type=checkbox name="formProjects" value='+ projectsArray[i] +' checked/>'+ projectsArray[i] +'\n'
     }
-               //'<select id="selectProject">\n' +
-               //'<option>' + project + '</option>\n';
+
+    checkValidityToken();
 
     xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -87,6 +116,8 @@ function updateUser()
 
  }
 
+checkValidityToken();
+
  var xmlhttp = new XMLHttpRequest();
  xmlhttp.open("PUT", "http://localhost:8080/users");
  xmlhttp.setRequestHeader("Content-Type", "application/json");
@@ -97,6 +128,9 @@ function updateUser()
 
 function deleteUser()
 {
+
+ checkValidityToken();
+
  var userId = localStorage.getItem('id');
  var xmlhttp = new XMLHttpRequest();
  xmlhttp.open("DELETE", "http://localhost:8080/users/"+userId);
