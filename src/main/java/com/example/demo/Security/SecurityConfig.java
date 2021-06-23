@@ -61,7 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**.html")
                 .antMatchers("/js/**.js")
                 .antMatchers("/favicon.ico")
-                .antMatchers("/error/**");
+                .antMatchers("/error/**")
+                .antMatchers("/message");
     }
 
     @Bean

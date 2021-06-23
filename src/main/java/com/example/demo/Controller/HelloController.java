@@ -13,8 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -34,6 +37,9 @@ public class HelloController {
 
     @Autowired
     private RedisRepository redisRepository;
+
+    @Autowired
+    private KafkaTemplate<Long, UserKafka> kafkaTemplate;
 
     /*@GetMapping("/")
     public String index() {
@@ -65,7 +71,16 @@ public class HelloController {
         userRedis.setId(++RedisRepositoryImpl.countActiveUsers);
         redisRepository.add(userRedis);
 
+        sendKafka(new UserKafka(userRedis.getId(), userRedis.getName(),"online"));
+
         return new ResponseEntity<TokenResponse>(tokenResponse, HttpStatus.OK);
+    }
+
+    private void sendKafka(UserKafka userKafka) {
+        ListenableFuture<SendResult<Long, UserKafka>> future = kafkaTemplate.send("users",
+                (long)RedisRepositoryImpl.countActiveUsers, userKafka);
+        future.addCallback(System.out::println, System.err::println);
+        kafkaTemplate.flush();
     }
 
     @PostMapping("/logout")
@@ -73,11 +88,15 @@ public class HelloController {
         Map<Object, Object> users = redisRepository.findAllUsers();
         for(Map.Entry<Object, Object> pair : users.entrySet())
         {
-            if(((String)pair.getValue()).equals(name));
-            redisRepository.delete(pair.getKey().toString());
-            break;
+            if(((String)pair.getValue()).equals(name)) {
+                UserRedis userRedis = new UserRedis();
+                userRedis.setId((int)pair.getKey());
+                userRedis.setName((String)pair.getValue());
+                sendKafka(new UserKafka(userRedis.getId(), userRedis.getName(),"offline"));
+                redisRepository.delete(pair.getKey().toString());
+                break;
+            }
         }
-        System.out.println("logout!: ");
 
     }
 
