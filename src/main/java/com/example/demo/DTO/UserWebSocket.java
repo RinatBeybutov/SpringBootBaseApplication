@@ -3,6 +3,15 @@ package com.example.demo.DTO;
 public class UserWebSocket {
     private String username;
     private String password;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getUsername() {
         return username;

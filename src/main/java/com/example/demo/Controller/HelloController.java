@@ -64,7 +64,8 @@ public class HelloController {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(formData))
                 .retrieve()
-                .bodyToMono(TokenResponse.class).block();
+                .bodyToMono(TokenResponse.class)
+                .block();
 
         UserRedis userRedis = new UserRedis();
         userRedis.setName(name);
@@ -84,7 +85,7 @@ public class HelloController {
     }
 
     @PostMapping("/logout")
-    public void logout(@RequestParam("name") String name) {
+    public ResponseEntity<OkResponse> logout(@RequestParam("name") String name) {
         Map<Object, Object> users = redisRepository.findAllUsers();
         for(Map.Entry<Object, Object> pair : users.entrySet())
         {
@@ -93,11 +94,11 @@ public class HelloController {
                 userRedis.setId((int)pair.getKey());
                 userRedis.setName((String)pair.getValue());
                 sendKafka(new UserKafka(userRedis.getId(), userRedis.getName(),"offline"));
-                redisRepository.delete(pair.getKey().toString());
+                redisRepository.deleteUser(pair.getKey().toString());
                 break;
             }
         }
-
+        return new ResponseEntity<>(new OkResponse("ok"), HttpStatus.OK);
     }
 
     @GetMapping("/users")

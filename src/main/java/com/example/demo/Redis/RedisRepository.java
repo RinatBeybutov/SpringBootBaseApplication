@@ -1,5 +1,7 @@
 package com.example.demo.Redis;
 
+import com.example.demo.DTO.SocketAndUser;
+
 import java.util.Map;
 
 public interface RedisRepository {
@@ -14,10 +16,14 @@ public interface RedisRepository {
      */
     void add(UserRedis user);
 
+    void add(SocketAndUser socketAndUser);
+
     /**
      * Delete a key-value pair in Redis.
      */
-    void delete(String id);
+    void deleteUser(String id);
+
+    void deleteSocket(String id);
     
     /**
      * find a movie
